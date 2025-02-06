@@ -1,0 +1,6 @@
+#game-container {
+  width: 1400px; /* Adjust as needed */
+  height: 800px; /* Adjust as needed */
+  margin: 0 auto;
+  position: relative;
+}
