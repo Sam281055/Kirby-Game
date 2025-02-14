@@ -8,7 +8,7 @@ import {
   setControls,
 } from './Game/entities';
 @Component({
-  selector: 'app-root',
+  selector: 'app',
   imports: [],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -85,5 +85,50 @@ export class AppComponent implements OnInit {
 
     this.gameContainer.nativeElement.appendChild(k.canvas);
     k.go('level-1');
+
+    k.loadSprite('level-2', '/level-2.png');
+
+    const { map: level2Layout, spawnPoints: level2SpawnPoints } = await makeMap(
+      k,
+      'level-2'
+    );
+
+    k.scene('level-2', () => {
+      k.setGravity(2100);
+      k.add([
+        k.rect(k.width(), k.height()),
+        k.color(k.Color.fromHex('#f7d7db')),
+        k.fixed(),
+      ]);
+      k.add(level2Layout);
+      const kirb = makePlayer(
+        k,
+        level2SpawnPoints['player'][0].x,
+        level2SpawnPoints['player'][0].y
+      );
+      setControls(k, kirb);
+      k.add(kirb);
+      k.camScale(0.7, 0.7);
+      k.onUpdate(() => {
+        if (kirb.pos.x < level2Layout.pos.x + 2300) {
+          k.camPos(kirb.pos.x + 500, 864);
+        }
+      });
+      for (const flame of level2SpawnPoints['flame']) {
+        makeFlameEnemy(k, flame.x, flame.y);
+      }
+
+      for (const bird of level2SpawnPoints['bird']) {
+        const possibleSpeeds = [100, 200, 300];
+        k.loop(10, () => {
+          makeBirdEnemy(
+            k,
+            bird.x,
+            bird.y,
+            possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]
+          );
+        });
+      }
+    });
   }
 }
